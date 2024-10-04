@@ -12,12 +12,16 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    
+
+    strategy:
+      matrix:
+        test-file: [test1.sh, test2.sh, test3.sh]  # Matriz que ejecuta los tests en paralelo
+
     steps:
     # Step 1: Checkout the code from the repository
     - name: Checkout code
       uses: actions/checkout@v4
-    
+
     # Step 2: Set up environment (Optional: could include setting up dependencies, languages, etc.)
     - name: Set up environment
       run: |
@@ -28,18 +32,8 @@ jobs:
       run: |
         echo "Building application..."
 
-    # Step 4: Run tests in parallel using matrix
-    test:
-      name: Run Tests in Parallel
-      runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          test-file: [test1.sh, test2.sh, test3.sh]  # Matriz que ejecuta los tests en paralelo
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
-
-        - name: Run test ${{ matrix.test-file }}
-          run: |
-            chmod +x tests/${{ matrix.test-file }}   # Dar permisos de ejecución a los scripts
-            ./tests/${{ matrix.test-file }}          # Ejecutar el test
+    # Step 4: Run each test in parallel
+    - name: Run test ${{ matrix.test-file }}
+      run: |
+        chmod +x tests/${{ matrix.test-file }}   # Dar permisos de ejecución a los scripts
+        ./tests/${{ matrix.test-file }}          # Ejecutar el test
